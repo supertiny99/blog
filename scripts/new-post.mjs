@@ -10,12 +10,18 @@
  *   文件名  可选，URL slug（即网址 /blog/<文件名>）
  *           不传时从标题自动生成；纯中文标题会回退为 post-YYYY-MM-DD
  *
+ * 图片（co-locate）:
+ *   脚本会同时创建同名图片文件夹 src/content/blog/<文件名>/。
+ *   把文章配图放进去，用相对路径引用，Astro 会自动压缩优化：
+ *     正文:  ![说明](./<文件名>/图片.png)
+ *     头图:  frontmatter 里  heroImage: './<文件名>/hero.jpg'
+ *
  * 示例:
  *   pnpm new-post "我的第一篇文章" my-first-post
  *   pnpm new-post "Hello World"
  */
 
-import { writeFile, access } from 'node:fs/promises';
+import { writeFile, access, mkdir, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -75,6 +81,7 @@ let slug = userSlug ? cleanSlug(userSlug) : slugify(title);
 if (!slug) slug = `post-${today()}`;
 
 const filePath = path.join(BLOG_DIR, `${slug}.md`);
+const imageDir = path.join(BLOG_DIR, slug);
 const date = nowISO();
 
 // 避免覆盖已有文章
@@ -94,15 +101,26 @@ const content = `---
 title: '${yamlTitle}'
 description: ''
 pubDate: '${date}'
+# heroImage: './${slug}/hero.jpg'  # 可选：头图，把图片放进 src/content/blog/${slug}/
 ---
 
 <!-- 在这里开始写正文。标准 Markdown 语法，保存后 pnpm dev 即可预览。 -->
+<!-- 插图：图片放进 src/content/blog/${slug}/，用 ![](./${slug}/图片名.png) 引用，Astro 会自动压缩优化。 -->
 `;
 
 await writeFile(filePath, content, 'utf8');
+
+// 创建同名图片文件夹（co-locate）；仅在文件夹为空时放 .gitkeep 让 git 跟踪
+await mkdir(imageDir, { recursive: true });
+const existing = (await readdir(imageDir)).filter((f) => f !== '.gitkeep');
+if (existing.length === 0) {
+	await writeFile(path.join(imageDir, '.gitkeep'), '', 'utf8');
+}
 
 console.log(`✓ 已创建文章: ${path.relative(process.cwd(), filePath)}`);
 console.log(`  标题: ${title}`);
 console.log(`  日期: ${date}`);
 console.log(`  网址: /blog/${slug}`);
+console.log(`  配图: 把图片放进 src/content/blog/${slug}/`);
+console.log(`        正文引用 ![](./${slug}/图片名.png)，头图设 heroImage: './${slug}/hero.jpg'`);
 console.log(`  预览: pnpm dev  →  http://localhost:4321/blog/${slug}`);
