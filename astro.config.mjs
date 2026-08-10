@@ -8,7 +8,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://blog.pages.dev',
+  site: 'https://blog.330283.xyz',
   integrations: [mdx(), sitemap()],
 
   fonts: [
