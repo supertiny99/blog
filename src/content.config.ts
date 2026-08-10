@@ -13,6 +13,8 @@ const blog = defineCollection({
 			// Transform string to Date object
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
+			// 可选：覆盖 consts.SITE_TIMEZONE，指定该文章显示日期所用的时区（IANA 名称）
+			timezone: z.string().optional(),
 			heroImage: z.optional(image()),
 		}),
 });

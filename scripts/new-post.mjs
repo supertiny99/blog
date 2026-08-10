@@ -30,13 +30,27 @@ if (!title) {
 	process.exit(1);
 }
 
-/** 今天日期 YYYY-MM-DD */
+/** 今天日期 YYYY-MM-DD（用于文件名 slug 等不需要时刻的场景） */
 function today() {
 	const d = new Date();
 	const yyyy = d.getFullYear();
 	const mm = String(d.getMonth() + 1).padStart(2, '0');
 	const dd = String(d.getDate()).padStart(2, '0');
 	return `${yyyy}-${mm}-${dd}`;
+}
+
+/** 当前时刻的完整 ISO（带本地时区偏移），如 2026-08-10T15:32:00+08:00 */
+function nowISO() {
+	const d = new Date();
+	const pad = (n) => String(n).padStart(2, '0');
+	const offMin = -d.getTimezoneOffset(); // 东八区 = 480
+	const sign = offMin >= 0 ? '+' : '-';
+	const abs = Math.abs(offMin);
+	return (
+		`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+		`T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` +
+		`${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`
+	);
 }
 
 /** 把字符串转成 URL 友好的 slug（仅对英文有效，纯中文会得到空串） */
@@ -61,7 +75,7 @@ let slug = userSlug ? cleanSlug(userSlug) : slugify(title);
 if (!slug) slug = `post-${today()}`;
 
 const filePath = path.join(BLOG_DIR, `${slug}.md`);
-const date = today();
+const date = nowISO();
 
 // 避免覆盖已有文章
 try {
