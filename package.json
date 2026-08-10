@@ -11,7 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "generate-types": "wrangler types",
-    "deploy": "bash scripts/deploy.sh"
+    "deploy:cf": "bash scripts/deploy.sh"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.2.0",
