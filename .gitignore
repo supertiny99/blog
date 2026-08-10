@@ -3,6 +3,9 @@ dist/
 # generated types
 .astro/
 
+# wrangler local state (miniflare runtime)
+.wrangler/
+
 # dependencies
 node_modules/
 
