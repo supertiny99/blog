@@ -2,6 +2,7 @@
 title: '又见博客'
 description: ''
 pubDate: '2026-08-10T00:00:00+08:00'
+tags: ['随笔', 'ai']
 ---
 
 <!-- 在这里开始写正文。标准 Markdown 语法，保存后 pnpm dev 即可预览。 -->

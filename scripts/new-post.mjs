@@ -102,6 +102,7 @@ title: '${yamlTitle}'
 description: ''
 pubDate: '${date}'
 # heroImage: './${slug}/hero.jpg'  # 可选：头图，把图片放进 src/content/blog/${slug}/
+tags: []  # 可选：标签数组，如 ['react', '随笔']；值即展示文案与 URL slug
 ---
 
 <!-- 在这里开始写正文。标准 Markdown 语法，保存后 pnpm dev 即可预览。 -->

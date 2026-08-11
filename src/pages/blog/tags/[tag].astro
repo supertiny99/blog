@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import Header from '../../../components/Header.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { SITE_TITLE } from '../../../consts';
+
+export async function getStaticPaths() {
+	const posts = (await getCollection('blog')).sort(
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	);
+	// 收集所有标签（按出现顺序去重），为每个标签生成一个静态列表页
+	const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+	return tags.map((tag) => ({
+		params: { tag },
+		props: {
+			tag,
+			posts: posts.filter((p) => p.data.tags.includes(tag)),
+		},
+	}));
+}
+
+type Props = { tag: string; posts: CollectionEntry<'blog'>[] };
+const { tag, posts } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`标签：${tag} - ${SITE_TITLE}`} description={`${SITE_TITLE} 中标签为 ${tag} 的文章`} />
+		<style>
+			main {
+				width: 960px;
+			}
+			.back {
+				display: inline-block;
+				margin-bottom: 1rem;
+				color: rgb(var(--gray));
+				text-decoration: none;
+			}
+			.back:hover {
+				color: rgb(var(--accent));
+			}
+			.tag-head {
+				text-align: center;
+				margin-bottom: 1.5rem;
+			}
+			.tag-head h1 {
+				margin: 0 0 0.25em;
+			}
+			.tag-head .count {
+				margin: 0;
+				color: rgb(var(--gray));
+			}
+			ul {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 2rem;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			@media (max-width: 720px) {
+				ul {
+					gap: 0.5em;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+				<a class="back" href="/blog">← 返回全部文章</a>
+				<div class="tag-head">
+					<h1># {tag}</h1>
+					<p class="count">{posts.length} 篇文章</p>
+				</div>
+				<ul>
+					{posts.map((post) => (
+						<PostCard post={post} />
+					))}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

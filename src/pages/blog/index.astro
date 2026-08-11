@@ -1,15 +1,16 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
+import PostCard from '../../components/PostCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+// 收集全部标签（按出现顺序去重），渲染为列表页顶部的标签导航
+const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
 ---
 
 <!doctype html>
@@ -20,6 +21,28 @@ const posts = (await getCollection('blog')).sort(
 			main {
 				width: 960px;
 			}
+			.tag-nav {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5em;
+				justify-content: center;
+				margin: 0 0 2rem;
+				padding: 0;
+			}
+			.tag-nav a {
+				display: inline-block;
+				padding: 0.2em 0.8em;
+				font-size: 0.9rem;
+				color: rgb(var(--gray));
+				border: 1px solid rgb(var(--gray));
+				border-radius: 999px;
+				text-decoration: none;
+				transition: 0.2s ease;
+			}
+			.tag-nav a:hover {
+				color: rgb(var(--accent));
+				border-color: rgb(var(--accent));
+			}
 			ul {
 				display: flex;
 				flex-wrap: wrap;
@@ -28,60 +51,9 @@ const posts = (await getCollection('blog')).sort(
 				margin: 0;
 				padding: 0;
 			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
 			@media (max-width: 720px) {
 				ul {
 					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
 				}
 			}
 		</style>
@@ -90,22 +62,19 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<section>
+				{
+					allTags.length > 0 && (
+						<nav class="tag-nav">
+							{allTags.map((tag) => (
+								<a href={`/blog/tags/${tag}/`}>{tag}</a>
+							))}
+						</nav>
+					)
+				}
 				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} timeZone={post.data.timezone} />
-									</p>
-								</a>
-							</li>
-						))
-					}
+					{posts.map((post) => (
+						<PostCard post={post} />
+					))}
 				</ul>
 			</section>
 		</main>

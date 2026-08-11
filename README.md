@@ -88,6 +88,20 @@ heroImage: './my-post/hero.jpg'
 - 全小写、连字符分词、带语义：`react-state.png`，而非 `IMG_3278.JPG` 或 `图片1.png`
 - 占位图放进 `placeholders/` 并在名字里体现（如 `placeholder-xxx`），别和真图混放
 
+## 标签（tags）
+
+文章 frontmatter 的 `tags` 字段是字符串数组，用于按主题筛选文章：
+
+```yaml
+tags: ['react', '随笔']
+```
+
+- **值即展示、即 URL**：`tags: ['react']` 显示为 `react`，并生成 `/blog/tags/react/` 独立页面
+- **每个标签一页**：Astro 构建时为每个标签生成静态列表页，列出该标签下全部文章——URL 可分享、可被搜索引擎收录
+- **入口**：`/blog` 列表页顶部有全部标签导航条；文章卡片和详情页也显示标签，点击即跳到对应标签页
+- **命名约定**：建议小写英文或短中文（如 `react`、`guide`、`随笔`）。大小写不同的值（`React` vs `react`）会被当成两个标签，请自行保持一致（不做强制转换，以免改写展示文案）
+- **中文标签**：可用，但 URL 会被浏览器 encode（如 `/blog/tags/%E9%9A%8F%E7%AC%94/`），功能正常只是不够干净——介意 URL 美观就用英文
+
 ## 写新文章
 
 ```sh
