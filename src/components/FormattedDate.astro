@@ -11,12 +11,12 @@ const { date, timeZone = SITE_TIMEZONE } = Astro.props;
 ---
 
 <time datetime={date.toISOString()}>
-	{
-		date.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-			timeZone,
-		})
-	}
+		{
+			date.toLocaleDateString('zh-CN', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+				timeZone,
+			})
+		}
 </time>
